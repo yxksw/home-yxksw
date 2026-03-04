@@ -1,0 +1,11 @@
+{
+  "status": "success",
+  "data": [
+    {
+      "name": "示例朋友",
+      "url": "https://example.com",
+      "avatar": "https://cdn.rjjr.cn/static/b_7d496543265df764f6ed5046e5d69a.jpg",
+      "description": "这是一个示例朋友链接"
+    }
+  ]
+}

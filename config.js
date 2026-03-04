@@ -5,7 +5,7 @@ const CONFIG = {
     // GitHub 配置
     GITHUB: {
         USERNAME: 'yxksw',
-        TOKEN: ''  // 如果需要访问私有仓库或提高 API 限制，请填写 GitHub Personal Access Token
+        TOKEN: process.env.GH_TOKEN || ''  // 优先从环境变量读取，也可直接填写 GitHub Personal Access Token
     },
 
     // Memos 配置

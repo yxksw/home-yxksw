@@ -5,7 +5,7 @@ const CONFIG = {
     // GitHub 配置
     GITHUB: {
         USERNAME: 'yxksw',
-        TOKEN: process.env.GH_TOKEN || ''  // 优先从环境变量读取，也可直接填写 GitHub Personal Access Token
+        TOKEN: ''  // 请填写 GitHub Personal Access Token，或在构建时通过环境变量注入
     },
 
     // Memos 配置

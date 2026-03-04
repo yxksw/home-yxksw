@@ -1,0 +1,14 @@
+# 禁用 GitHub Pages 自动部署
+# 这个空工作流会覆盖默认的 pages build and deployment 工作流
+
+name: pages build and deployment
+
+on:
+  push:
+    branches: [none]  # 永远不会触发
+
+jobs:
+  skip:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "GitHub Pages deployment is disabled"

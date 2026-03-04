@@ -69,14 +69,14 @@ const ongoingProject = {
     forks: 0
 };
 
-// GitHub API配置
-const GITHUB_USERNAME = 'yxksw';
+// 从配置文件读取 API 配置
+const GITHUB_USERNAME = CONFIG.GITHUB.USERNAME;
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = process.env.GH_TOKEN;
+const GITHUB_TOKEN = CONFIG.GH.TOKEN;
 
 // Memos API配置
-const MEMOS_API_BASE = 'https://mastodon-api.050815.xyz/api/v1/memo';
-const MEMOS_TOKEN = '';
+const MEMOS_API_BASE = CONFIG.MEMOS.API_BASE;
+const MEMOS_TOKEN = CONFIG.MEMOS.TOKEN;
 // const MEMOS_RESOURCE_BASE = 'http://120.26.160.134:5230/o/r/'; // Memos 资源的基础URL
 
 // 文章 API 配置

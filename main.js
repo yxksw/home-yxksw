@@ -72,7 +72,7 @@ const ongoingProject = {
 // 从配置文件读取 API 配置
 const GITHUB_USERNAME = CONFIG.GITHUB.USERNAME;
 const GITHUB_API_BASE = 'https://api.github.com';
-const GITHUB_TOKEN = CONFIG.GH.TOKEN;
+const GH_TOKEN = CONFIG.GITHUB.TOKEN;
 
 // Memos API配置
 const MEMOS_API_BASE = CONFIG.MEMOS.API_BASE;

@@ -1641,10 +1641,12 @@ margin-left: auto; /* 保持靠右 */
 */
 /* 暂时注释掉主题切换按钮样式 - 结束 */
 
-/* 修改 SVG 图标颜色 */
-.social-links svg path {
+/* 修改 SVG 图标颜色，但排除特定图标 */
+.social-links svg:not(.github-icon):not(.telegram-icon):not(.mastodon-icon) path {
     fill: var(--icon-color);
 }
+
+
 
 .stats svg path {
     fill: var(--icon-color);
@@ -2841,8 +2843,8 @@ margin-left: auto; /* 保持靠右 */
     background-color: var(--bg-secondary-dark);
 }
 
-/* 修复暗色模式下的图标颜色 */
-[data-theme="dark"] .social-links svg path {
+/* 修复暗色模式下的图标颜色，但排除特定图标 */
+[data-theme="dark"] .social-links svg:not(.github-icon):not(.telegram-icon):not(.mastodon-icon) path {
     fill: var(--icon-color);
 }
 
@@ -5100,6 +5102,26 @@ margin-left: auto; /* 保持靠右 */
     overflow: hidden;
     text-overflow: ellipsis;
     line-height: 1.4;
+}
+
+/* 推荐标签样式 */
+.friend-card-recommended {
+    position: relative;
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 1px #f59e0b;
+}
+
+.friend-recommended-badge {
+    position: absolute;
+    top: -1px;
+    right: -1px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0 6px 0 6px;
+    z-index: 1;
 }
 
 @media (max-width: 768px) {
@@ -8381,8 +8403,8 @@ margin-left: auto; /* 保持靠右 */
     color: #b39ddb !important;
 }
 
-/* 修复暗色模式下的图标颜色 */
-[data-theme="dark"] .social-links svg path {
+/* 修复暗色模式下的图标颜色，但排除特定图标 */
+[data-theme="dark"] .social-links svg:not(.github-icon):not(.telegram-icon):not(.mastodon-icon) path {
     fill: var(--icon-color);
 }
 

@@ -376,6 +376,14 @@ async function fetchGitHubData() {
           );
         }
 
+        // 保存 commits 数据到全局变量供后续使用
+        if (staticData.commits) {
+          window.githubCommitsData = staticData.commits;
+          console.log(
+            `Loaded ${staticData.commits.length} commits from static data`,
+          );
+        }
+
         return filteredRepos;
       }
     } catch (staticError) {
@@ -945,11 +953,27 @@ async function fetchContributionData(
     allForks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
     // 获取所有仓库的 Commits 数据
-    const allCommits = [];
-    for (const repo of userRepos.slice(0, 10)) {
-      // 限制最多获取前10个仓库，避免API限制
-      const repoCommits = await getRepoCommits(repo.name, startDate, endDate);
-      allCommits.push(...repoCommits);
+    let allCommits = [];
+
+    // 优先使用预获取的 commits 数据
+    if (window.githubCommitsData && window.githubCommitsData.length > 0) {
+      console.log(
+        `Using ${window.githubCommitsData.length} pre-fetched commits`,
+      );
+      allCommits = window.githubCommitsData.map((commit) => ({
+        ...commit,
+        created_at: commit.commit?.committer?.date || commit.created_at,
+        message: commit.commit?.message || commit.message,
+        sha: commit.sha,
+        repo: commit.repo || commit.repository?.name,
+      }));
+    } else {
+      // 如果没有预获取的数据，则从 API 获取
+      for (const repo of userRepos.slice(0, 10)) {
+        // 限制最多获取前10个仓库，避免API限制
+        const repoCommits = await getRepoCommits(repo.name, startDate, endDate);
+        allCommits.push(...repoCommits);
+      }
     }
 
     // 对 Commits 按时间倒序排序，确保最新的 Commits 在前面
@@ -1197,12 +1221,14 @@ async function fetchContributionData(
 
         if (!existingActivity) {
           // 创建新的 commit 活动
+          const commitMessage =
+            commit.commit?.message || commit.message || "No message";
           activitiesByMonth[monthStr].push({
             type: "commit",
             repo: commit.repo,
             count: 1,
             commits: [commit],
-            commitMessages: [commit.commit.message],
+            commitMessages: [commitMessage],
             description: `Created commit in ${commit.repo}`,
             date: commitDate.toLocaleString("en-US", {
               month: "short",
@@ -1214,13 +1240,13 @@ async function fetchContributionData(
           });
         } else {
           // 更新现有的 commit 活动
+          const commitMessage =
+            commit.commit?.message || commit.message || "No message";
           existingActivity.count += 1;
           existingActivity.commits.push(commit);
           // 检查commit message是否已经存在，避免重复添加
-          if (
-            !existingActivity.commitMessages.includes(commit.commit.message)
-          ) {
-            existingActivity.commitMessages.push(commit.commit.message);
+          if (!existingActivity.commitMessages.includes(commitMessage)) {
+            existingActivity.commitMessages.push(commitMessage);
           }
           existingActivity.description = `Created ${existingActivity.count} commit${existingActivity.count > 1 ? "s" : ""} in ${commit.repo}`;
           // 更新时间为最新的 commit 时间

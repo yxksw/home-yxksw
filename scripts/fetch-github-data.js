@@ -114,6 +114,48 @@ async function fetchUserStars() {
   return stars;
 }
 
+async function fetchAllCommits() {
+  console.log("Fetching all commits...");
+  const allCommits = [];
+
+  // Get all repos first
+  const repos = await fetchAllRepos();
+
+  // Fetch commits for each repo
+  for (const repo of repos.slice(0, 20)) {
+    // Limit to 20 repos to avoid rate limits
+    try {
+      console.log(`Fetching commits for ${repo.name}...`);
+      const commits = await fetchWithRetry(
+        `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${repo.name}/commits?per_page=10&author=${GITHUB_USERNAME}`,
+      );
+
+      // Add repo info to each commit
+      const commitsWithRepo = commits.map((commit) => ({
+        ...commit,
+        repo: repo.name,
+        repoFullName: repo.full_name,
+      }));
+
+      allCommits.push(...commitsWithRepo);
+
+      // Add delay to avoid rate limiting
+      await new Promise((resolve) => setTimeout(resolve, 200));
+    } catch (error) {
+      console.error(`Error fetching commits for ${repo.name}:`, error.message);
+    }
+  }
+
+  // Sort by date descending
+  allCommits.sort(
+    (a, b) =>
+      new Date(b.commit.committer.date) - new Date(a.commit.committer.date),
+  );
+
+  console.log(`Fetched ${allCommits.length} total commits`);
+  return allCommits.slice(0, 100); // Return top 100 recent commits
+}
+
 async function main() {
   try {
     console.log("Starting GitHub data fetch...");
@@ -140,10 +182,11 @@ async function main() {
       }
     }
 
-    const [events, forks, stars] = await Promise.all([
+    const [events, forks, stars, allCommits] = await Promise.all([
       fetchUserEvents(),
       fetchUserForks(),
       fetchUserStars(),
+      fetchAllCommits(),
     ]);
 
     // Prepare data object
@@ -154,6 +197,7 @@ async function main() {
       events,
       forks,
       stars,
+      commits: allCommits,
     };
 
     // Save to file
@@ -165,6 +209,7 @@ async function main() {
     console.log(`   - Events: ${events.length}`);
     console.log(`   - Forks: ${forks.length}`);
     console.log(`   - Stars: ${stars.length}`);
+    console.log(`   - Commits: ${allCommits.length}`);
   } catch (error) {
     console.error("Error fetching GitHub data:", error);
     process.exit(1);

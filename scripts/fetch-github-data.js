@@ -3,7 +3,7 @@ const path = require("path");
 
 const GH_TOKEN = process.env.GH_TOKEN;
 const GITHUB_USERNAME = process.env.GITHUB_USERNAME || "yxksw";
-const GITHUB_API_BASE = "https://api-github-com-gh.261770.xyz";
+const GITHUB_API_BASE = "https://api.github.com";
 
 const headers = {
   Accept: "application/vnd.github.v3+json",

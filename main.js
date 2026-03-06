@@ -1005,32 +1005,50 @@ async function fetchContributionData(
         // 处理不同类型的事件
         switch (event.type) {
           case "PushEvent":
-            const commitCount = event.payload.commits
-              ? event.payload.commits.length
-              : 0;
+            // 从 allCommits 中查找与这个 PushEvent 相关的 commits
+            const repoName = event.repo.name.split("/")[1];
+            const pushDate = new Date(event.created_at);
+            const pushDateStr = pushDate.toISOString().split("T")[0];
+
+            // 查找同一仓库、同一日期的 commits
+            const relatedCommits = allCommits.filter((commit) => {
+              const commitDate = new Date(commit.created_at);
+              const commitDateStr = commitDate.toISOString().split("T")[0];
+              return (
+                (commit.repo === repoName || commit.repo === event.repo.name) &&
+                commitDateStr === pushDateStr
+              );
+            });
+
+            const commitCount =
+              relatedCommits.length ||
+              (event.payload.commits ? event.payload.commits.length : 0);
             contributionsByDate[dateStr] += commitCount;
 
             // 确保每个 PushEvent 都会创建活动记录，即使 commitCount 为 0
             console.log(
-              `处理 PushEvent: ${event.repo.name}, commits: ${commitCount}`,
+              `处理 PushEvent: ${event.repo.name}, commits: ${commitCount}, found in allCommits: ${relatedCommits.length}`,
             );
 
-            // 获取提交信息
-            const commits = event.payload.commits || [];
+            // 获取提交信息 - 优先使用 allCommits 中的数据
+            const commits =
+              relatedCommits.length > 0
+                ? relatedCommits
+                : event.payload.commits || [];
             const commitMessages = commits
-              .map((commit) => commit.message)
+              .map((commit) => commit.commit?.message || commit.message)
               .slice(0, 3); // 只取前3个提交信息
 
             activitiesByMonth[monthStr].push({
               type: "commit",
-              repo: event.repo.name.split("/")[1],
+              repo: repoName,
               count: commitCount,
               commits: commits,
               commitMessages: commitMessages,
               description:
                 commitCount > 0
-                  ? `Created ${commitCount} commit${commitCount > 1 ? "s" : ""} in ${event.repo.name.split("/")[1]}`
-                  : `Pushed to ${event.repo.name.split("/")[1]}`,
+                  ? `Created ${commitCount} commit${commitCount > 1 ? "s" : ""} in ${repoName}`
+                  : `Pushed to ${repoName}`,
               date: eventDate.toLocaleString("en-US", {
                 month: "short",
                 day: "numeric",

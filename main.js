@@ -73,7 +73,7 @@ const ongoingProject = {
 
 // 从配置文件读取 API 配置
 const GITHUB_USERNAME = CONFIG.GITHUB.USERNAME;
-const GITHUB_API_BASE = "https://api.github.com";
+const GITHUB_API_BASE = "https://api-github-com-gh.261770.xyz";
 const GH_TOKEN = CONFIG.GITHUB.TOKEN;
 
 // Memos API配置
@@ -759,7 +759,7 @@ async function fetchContributionData(
     // 新增：获取用户的所有仓库
     async function getUserRepos() {
       const reposResponse = await fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
+        `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?per_page=100&sort=updated`,
         { headers },
       );
 
@@ -776,7 +776,7 @@ async function fetchContributionData(
     async function getRepoCommits(repoName, since, until) {
       try {
         const commitsResponse = await fetch(
-          `https://api.github.com/repos/${GITHUB_USERNAME}/${repoName}/commits?author=${GITHUB_USERNAME}&since=${since.toISOString()}&until=${until.toISOString()}&per_page=100`,
+          `${GITHUB_API_BASE}/repos/${GITHUB_USERNAME}/${repoName}/commits?author=${GITHUB_USERNAME}&since=${since.toISOString()}&until=${until.toISOString()}&per_page=100`,
           { headers },
         );
 
@@ -802,7 +802,7 @@ async function fetchContributionData(
     async function getUserStars(since, until) {
       try {
         const starsResponse = await fetch(
-          `https://api.github.com/users/${GITHUB_USERNAME}/starred?per_page=100&sort=updated`,
+          `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/starred?per_page=100&sort=updated`,
           { headers },
         );
 
@@ -835,7 +835,7 @@ async function fetchContributionData(
     async function getUserForks(since, until) {
       try {
         const forksResponse = await fetch(
-          `https://api.github.com/users/${GITHUB_USERNAME}/repos?type=fork&per_page=100&sort=updated`,
+          `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/repos?type=fork&per_page=100&sort=updated`,
           { headers },
         );
 
@@ -900,7 +900,7 @@ async function fetchContributionData(
 
           while (hasMorePages && page <= maxPages) {
             const response = await fetch(
-              `https://api.github.com/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`,
+              `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=100&page=${page}`,
               { headers },
             );
 
@@ -1477,7 +1477,7 @@ async function checkContributionUpdates() {
       }
 
       const response = await fetch(
-        `https://api.github.com/users/${GITHUB_USERNAME}/events?per_page=10`,
+        `${GITHUB_API_BASE}/users/${GITHUB_USERNAME}/events?per_page=10`,
         { headers },
       );
 
@@ -1862,7 +1862,7 @@ function renderActivityTimeline(data, activities = null) {
                                         : `
                                         <div class="commit-messages commit-bg-red" data-activity-id="${activity.id || Math.random().toString(36).substr(2, 9)}">
                                             <div class="commit-message-item">
-                                                <span class="commit-message-text">Pushed to ${activity.branch || "main"}</span>
+                                                <span class="commit-message-text">${activity.count > 0 ? `Pushed ${activity.count} commit${activity.count > 1 ? "s" : ""} to ${activity.branch || "main"}` : `Pushed to ${activity.branch || "main"}`}</span>
                                             </div>
                                         </div>
                                     `

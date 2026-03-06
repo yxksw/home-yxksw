@@ -13,6 +13,7 @@ const headers = {
 if (GH_TOKEN) {
   headers["Authorization"] = `token ${GH_TOKEN}`;
   console.log("Using authenticated GitHub API requests");
+  console.log(`Token prefix: ${GH_TOKEN.substring(0, 4)}...`);
 } else {
   console.log(
     "Warning: No GH_TOKEN provided, using unauthenticated requests (rate limited)",

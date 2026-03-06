@@ -1010,19 +1010,28 @@ async function fetchContributionData(
             const pushDate = new Date(event.created_at);
             const pushDateStr = pushDate.toISOString().split("T")[0];
 
-            // 查找同一仓库、同一日期的 commits
+            // 查找同一仓库的 commits（放宽日期匹配，允许前后一天）
             const relatedCommits = allCommits.filter((commit) => {
               const commitDate = new Date(commit.created_at);
               const commitDateStr = commitDate.toISOString().split("T")[0];
-              return (
-                (commit.repo === repoName || commit.repo === event.repo.name) &&
-                commitDateStr === pushDateStr
+              const isSameRepo =
+                commit.repo === repoName || commit.repo === event.repo.name;
+              // 放宽日期匹配：同一天或前后一天
+              const pushDateObj = new Date(pushDateStr);
+              const commitDateObj = new Date(commitDateStr);
+              const diffDays = Math.abs(
+                (pushDateObj - commitDateObj) / (1000 * 60 * 60 * 24),
               );
+              return isSameRepo && diffDays <= 1;
             });
 
+            // 优先使用 allCommits 中的数据
             const commitCount =
-              relatedCommits.length ||
-              (event.payload.commits ? event.payload.commits.length : 0);
+              relatedCommits.length > 0
+                ? relatedCommits.length
+                : event.payload.commits
+                  ? event.payload.commits.length
+                  : 0;
             contributionsByDate[dateStr] += commitCount;
 
             // 确保每个 PushEvent 都会创建活动记录，即使 commitCount 为 0
